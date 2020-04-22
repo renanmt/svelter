@@ -4,8 +4,8 @@
     import invariant from 'tiny-invariant';
     import { getContext } from 'svelte';
     import { getRouterContext, getSwitchContext } from './router-context';
-
     import { location, switchRoutes } from './store';
+    import matchPath from './route';
 
     const outOfContextMessage = 'Could not retrieve context. Is this component outside of a Router?';
     const _context = getRouterContext();
@@ -18,7 +18,7 @@
     const _switchContext = getSwitchContext();
 
     const logRoute = (num) => {
-        if (typeof(__SVELTER_DEV__) !== 'undefined' && __SVELTER_DEV__) {
+        if (typeof __SVELTER_DEV__ !== 'undefined' && __SVELTER_DEV__) {
             console.log(
                 num,
                 `path: ${path} - _shouldRender: ${_shouldRender} - $switchRoutes[path]: ${$switchRoutes[path]}`
@@ -26,13 +26,13 @@
         }
     };
 
-    $: {
+    function processRoute(matched) {
         if (_switchContext) {
-            if ($switchRoutes[path] === undefined && $location.pathname === path) {
+            if ($switchRoutes[path] === undefined && matched) {
                 _shouldRender = true;
                 $switchRoutes[path] = routeKey;
                 logRoute(1);
-            } else if ($switchRoutes[path] && $location.pathname !== path) {
+            } else if ($switchRoutes[path] && !matched) {
                 _shouldRender = false;
                 $switchRoutes[path] = undefined;
                 logRoute(2);
@@ -40,13 +40,18 @@
                 _shouldRender = true;
                 logRoute(3);
             }
-        } else if ($location.pathname === path) {
+        } else if (matched) {
             _shouldRender = true;
             logRoute(4);
         } else {
             _shouldRender = false;
             logRoute(5);
         }
+    }
+
+    $: {
+        const matched = matchPath($location.pathname, path);
+        processRoute(matched);
     }
 </script>
 

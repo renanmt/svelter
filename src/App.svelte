@@ -15,15 +15,17 @@
         <Link to="/test02">Test 02</Link>
         <Switch>
             <Route path="/test01">
-                <h1>it works 1!</h1>
+                <h2>Inside switch 01 A</h2>
             </Route>
-
+            <Route path="/test01">
+                <h2>Inside switch 01 B</h2>
+            </Route>
         </Switch>
         <Route path="/test01">
-            <h1>it works 2!</h1>
+            <h2>Outside switch 01</h2>
         </Route>
         <Route path="/test02">
-            <h1>it also works!</h1>
+            <h2>Outside switch 02</h2>
         </Route>
 
     </BrowserRouter>
